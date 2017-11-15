@@ -59,11 +59,11 @@ namespace TddShop.Cli.Shipment
             bool charsCheck = checkAllowableChars(romanValue);
 
             var convertionResult = charsCheck ? fromRoman(romanValue) : 0;
-            var validator = fromRoman(toRoman(convertionResult));
+            var validator = toRoman(convertionResult);
 
             //Only ints should be validated becouse of different notationats
             //string (roman chars) comparision is not good idea in this case.
-            if (validator == convertionResult && validator != 0)
+            if (validator == romanValue && convertionResult != 0)
             {
                 romanValue = toRoman(convertionResult); //Standarize notation
                 // For less than 4000 change thousandSign to M
