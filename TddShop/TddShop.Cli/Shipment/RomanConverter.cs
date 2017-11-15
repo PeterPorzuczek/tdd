@@ -61,11 +61,9 @@ namespace TddShop.Cli.Shipment
             var convertionResult = charsCheck ? fromRoman(romanValue) : 0;
             var validator = toRoman(convertionResult);
 
-            //Only ints should be validated becouse of different notationats
-            //string (roman chars) comparision is not good idea in this case.
+            //Validate if conversion is ok
             if (validator == romanValue && convertionResult != 0)
             {
-                romanValue = toRoman(convertionResult); //Standarize notation
                 // For less than 4000 change thousandSign to M
                 romanValue = convertionResult < 4000 ? romanValue
                                         .Replace($"{_thousandSign}", "M") :
