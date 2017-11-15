@@ -1,14 +1,17 @@
-﻿using TddShop.Cli.Order.Models;
+﻿using System;
+using TddShop.Cli.Order.Models;
 
 namespace TddShop.Cli.Shipment
 {
     public class AncientRomeShippingService
     {
         private readonly IDeliveryService _deliveryService;
+        private readonly IRomanConverter _romanConverter;
 
-        public AncientRomeShippingService(IDeliveryService deliveryService)
+        public AncientRomeShippingService(IDeliveryService deliveryService, IRomanConverter romanConverter)
         {
             _deliveryService = deliveryService;
+            _romanConverter = romanConverter;
         }
 
         /// <summary>
@@ -20,7 +23,23 @@ namespace TddShop.Cli.Shipment
         /// <param name="order"></param>
         public void ShipOrder(OrderModel order)
         {
-            
+            if (ValidOrder(order))
+            {
+                int shipmentRefNumberArabic = _deliveryService.GenerateShipmentReferenceNumber(order.Items.Length);
+                string shipmentRefNumberRoman = _romanConverter.Convert(shipmentRefNumberArabic);
+
+                _deliveryService.RequestDelivery(shipmentRefNumberRoman, order);
+            }
+        }
+
+        private bool ValidOrder(OrderModel order) {
+            if (order.Items.Length == 0) {
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(order.CustomerUsername)) {
+                return false;
+            }
+            return true;
         }
     }    
 }

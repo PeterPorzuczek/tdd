@@ -4,6 +4,11 @@ using System.Linq;
 
 namespace TddShop.Cli.Shipment
 {
+    //Standard roman notation ends on 4000
+    //Notation with visculum extends system
+    //Here are sources for info on roman notations:
+    //http://www.numericana.com/answer/roman.htm
+    //https://en.wikipedia.org/wiki/Roman_numerals#Vinculum
     //Main part
     public partial class RomanConverter : IRomanConverter
     {
@@ -12,8 +17,8 @@ namespace TddShop.Cli.Shipment
         private string _visculumSign = "\u0305";
         private string _visculumDoubleSign = "\u0305\u0305";
 
-        //TODO:Too big
-        public Tuple<string, int> Convert(int arabicValue)
+        //TODO:Too big, make it shorter
+        public string Convert(int arabicValue)
         {
             bool isVisculum = arabicValue >= 4000 ? true : false;
             _thousandSign = visculumThousandSign(isVisculum);
@@ -28,13 +33,12 @@ namespace TddShop.Cli.Shipment
                 convertionResult = arabicValue < 4000 ? convertionResult
                                         .Replace($"{_thousandSign}", "M") :
                                                     convertionResult;
-                return Tuple.Create(convertionResult
-                                    .Replace($"C{_thousandSign}", "CM")
-                                    , arabicValue);
+                return convertionResult
+                       .Replace($"C{_thousandSign}", "CM");
             }
             else
             {
-                return Tuple.Create("error", 0);
+                return "error";
             }
         }
 
@@ -45,8 +49,8 @@ namespace TddShop.Cli.Shipment
                              .All(c => allowableChars.Contains(c));
         }
 
-        //TODO:Too big
-        public Tuple<string, int> Convert(string romanValue)
+        //TODO:Too big, make it shorter
+        public int Convert(string romanValue)
         {
             bool isVisculum = true;
             _thousandSign = visculumThousandSign(isVisculum);
@@ -68,11 +72,11 @@ namespace TddShop.Cli.Shipment
                 romanValue = convertionResult < 4000 ? romanValue
                                         .Replace($"{_thousandSign}", "M") :
                                                  romanValue;
-                return Tuple.Create(romanValue, convertionResult);
+                return convertionResult;
             }
             else
             {
-                return Tuple.Create("error", 0);
+                return 0;
             }
         }
 
