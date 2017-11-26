@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using TddShop.Cli.Order.Models;
 
 namespace TddShop.Cli.Shipment
@@ -34,6 +35,9 @@ namespace TddShop.Cli.Shipment
 
         private bool ValidOrder(OrderModel order) {
             if (order.Items.Length == 0) {
+                return false;
+            }
+            if (order.Items.Sum(p => p.Quantity) == 0) {
                 return false;
             }
             if (string.IsNullOrWhiteSpace(order.CustomerUsername)) {

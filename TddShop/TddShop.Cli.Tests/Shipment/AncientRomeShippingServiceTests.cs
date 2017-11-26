@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using TddShop.Cli.Shipment;
 using TddShop.Cli.Order.Models;
+using System.Linq;
 
 namespace TddShop.Cli.Tests.Shipment
 {
@@ -23,91 +24,95 @@ namespace TddShop.Cli.Tests.Shipment
 
 
         [Test]
-        public void ShipOrder_OrderEmpty_ShouldGenerateReferenceNever(){
+        public void ShipOrder_OrderIsEmpty_ShouldNeverGenerateReferenceNumber(){
             //Arrange
-            var order = new OrderModel();
-            order.CustomerUsername = string.Empty;
-            order.Items = new ItemModel[] { };
+            var order = new OrderModel(){ CustomerUsername = "CustomerTestowy", Items = new ItemModel[] { } };
             //Act
             _target.ShipOrder(order);
 
             //Assert
-            _deliveryService.Verify(x => x.GenerateShipmentReferenceNumber(order.Items.Length), Times.Never());
+            _deliveryService.Verify(x => x.GenerateShipmentReferenceNumber(order.Items.Sum(p => p.Quantity)), Times.Never());
         }
 
         [Test]
-        public void ShipOrder_OrderNotEmpty_ShouldGenerateReferenceOnce()
+        public void ShipOrder_OrderIsNotEmpty_ShouldGenerateReferenceOnce()
         {
             //Arrange
-            var order = new OrderModel();
-            order.CustomerUsername = "CustomerTestowy";
-            order.Items = new ItemModel[] {
-                new ItemModel{ },
-                new ItemModel{ }
+            var order = new OrderModel() { 
+                CustomerUsername = "CustomerTestowy", 
+                Items = new ItemModel[] { 
+                    new ItemModel{ Quantity = 1 }, 
+                    new ItemModel{ Quantity = 1 } 
+                } 
+            };
+
+            int orderItemsQuantity = order.Items.Sum(p => p.Quantity);
+
+            //Act
+            _target.ShipOrder(order);
+
+            //Assert
+            _deliveryService.Verify(x => x.GenerateShipmentReferenceNumber(orderItemsQuantity), Times.Once());
+        }
+
+        [Test]
+        public void ShipOrder_OrderHasNoCustomerName_ShouldNeverGenerateReference()
+        {
+            //Arrange
+            var order = new OrderModel() {
+                CustomerUsername = string.Empty,
+                Items = new ItemModel[] {
+                    new ItemModel{ Quantity = 1 },
+                    new ItemModel{ Quantity = 1 }
+                }
             };
 
             //Act
             _target.ShipOrder(order);
 
             //Assert
-            _deliveryService.Verify(x => x.GenerateShipmentReferenceNumber(order.Items.Length), Times.Once());
+            _deliveryService.Verify(x => x.GenerateShipmentReferenceNumber(order.Items.Sum(p => p.Quantity)), Times.Never());
         }
 
         [Test]
-        public void ShipOrder_OrderHasNoCustomer_ShouldGenerateReferenceNever()
+        public void ShipOrder_OrderIsValid_ShouldRequestDeliveryOnce()
         {
             //Arrange
-            var order = new OrderModel();
-            order.CustomerUsername = string.Empty;
-            order.Items = new ItemModel[] {
-                new ItemModel{ },
-                new ItemModel{ }
+            var order = new OrderModel() {
+                CustomerUsername = "CustomerTestowy",
+                Items = new ItemModel[] {
+                    new ItemModel{ Quantity = 1 },
+                    new ItemModel{ Quantity = 1 }
+                }
             };
 
-            //Act
-            _target.ShipOrder(order);
-
-            //Assert
-            _deliveryService.Verify(x => x.GenerateShipmentReferenceNumber(order.Items.Length), Times.Never());
-        }
-
-        [Test]
-        public void ShipOrder_ReferenceNumberValid_ShouldConvertOnce()
-        {
-            //Arrange
-            var order = new OrderModel();
-            order.CustomerUsername = "CustomerTestowy";
-            order.Items = new ItemModel[] { new ItemModel { }, new ItemModel { } };
-
-            int shipmentRefNumberArabic = order.Items.Length;
-
-            _deliveryService.Setup(x => x.GenerateShipmentReferenceNumber(order.Items.Length)).Returns(shipmentRefNumberArabic);
-
-            //Act
-            _target.ShipOrder(order);
-
-            //Assert
-            _romanConvereter.Verify(x => x.Convert(shipmentRefNumberArabic), Times.Once());
-        }
-
-        [Test]
-        public void ShipOrder_OrderValid_ShouldDeliveryRequestOnce()
-        {
-            //Arrange
-            var order = new OrderModel();
-            order.CustomerUsername = "CustomerTestowy";
-            order.Items = new ItemModel[] { new ItemModel { }, new ItemModel { } };
-
+            int orderItemsQuantity = order.Items.Sum(p => p.Quantity);
             string shipmentRefNumberRoman = "II";
 
-            _deliveryService.Setup(x => x.GenerateShipmentReferenceNumber(order.Items.Length)).Returns(2);
-            _romanConvereter.Setup(x => x.Convert(order.Items.Length)).Returns(shipmentRefNumberRoman);
+            _deliveryService.Setup(x => x.GenerateShipmentReferenceNumber(orderItemsQuantity)).Returns(2);
+            _romanConvereter.Setup(x => x.Convert(orderItemsQuantity)).Returns(shipmentRefNumberRoman);
 
             //Act
             _target.ShipOrder(order);
 
             //Assert
             _deliveryService.Verify(x => x.RequestDelivery(shipmentRefNumberRoman, order), Times.Once());
+        }
+
+        [Test]
+        public void ShipOrder_OrderItemIsNull_ExceptionShouldBeThrown() {
+            
+            //Arrange            
+            var order = new OrderModel() {
+                CustomerUsername = "CustomerTestowy",
+                Items = new ItemModel[] { null }
+            };
+
+            //Act
+            TestDelegate exceptionDelegate = () => { _target.ShipOrder(order); };
+
+            //Assert
+            Assert.Throws(typeof(System.NullReferenceException), exceptionDelegate);
         }
 
     }

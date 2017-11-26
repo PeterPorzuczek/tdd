@@ -61,12 +61,20 @@
     <Compile Include="Account\UsernameValidator.cs" />
     <Compile Include="Shipment\AncientRomeShippingService.cs" />
     <Compile Include="Shipment\IDeliveryService.cs" />
-    <Compile Include="Shipment\IRomanConverter.cs" />
-    <Compile Include="Shipment\RomanConverter.cs" />
+    <Compile Include="Shipment\RomanConverter\IRomanConverter.cs" />
+    <Compile Include="Shipment\RomanConverter\IRomanLiterals.cs" />
+    <Compile Include="Shipment\RomanConverter\RomanConverter.cs" />
+    <Compile Include="Shipment\RomanConverter\RomanConverterException.cs" />
+    <Compile Include="Shipment\RomanConverter\RomanLiterals.cs" />
+    <Compile Include="Shipment\RomanConverter\RomanLiteralsFactory.cs" />
+    <Compile Include="Shipment\RomanConverter\RomanValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Shipment\RomanConverter\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

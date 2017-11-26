@@ -34,8 +34,8 @@ namespace TddShop.Cli.Tests.Shipment
 
         /// <summary>
         /// Converts the value arabic value is proper and expected value is NOT Proper converter should return expected error.
-        /// We test here visculum notation use. Visculum is used when our value is greater than 4000 because
-        /// standard roman notation max value is 4000 and there shouldn't be 4 MMMM in row
+        /// We test here vinculum notation use. Vinculum is used when our value is greater than 4000 because
+        /// standard roman notation max value is 3999 and there shouldn't be 4 MMMM in a row
         /// </summary>
         /// <param name="arabicValue">Arabic value.</param>
         /// <param name="romanValueExpected">Roman value expected.</param>
@@ -43,7 +43,7 @@ namespace TddShop.Cli.Tests.Shipment
         [TestCase(4000, "MMMM")] //Should be "I̅V̅"
         [TestCase(3000, "I̅I̅I̅")] //Should be "MMM"
         [TestCase(2000, "I̅I̅")] //Should be "MM"
-        public void ConvertValue_ArabicValueIsProperAndExpectedValueIsNOTProper_ConverterShouldReturnExpectedERROR(int arabicValue, string romanValueExpected)
+        public void ConvertValue_ArabicValueIsProperAndExpectedValueIsNOTProper_ConverterShouldReturnNotExpected(int arabicValue, string romanValueExpected)
         {
             //Arrange
             RomanConverter romanNumerals = new RomanConverter();
@@ -56,24 +56,23 @@ namespace TddShop.Cli.Tests.Shipment
         }
 
         /// <summary>
-        /// Converts the value arabic value is NOTP roper converter should return expected error.
+        /// Converts the value arabic value is not proper converter should return exception.
         /// check for any bad ints theres no 0 in roman
         /// </summary>
         /// <param name="arabicValue">Arabic value.</param>
-        /// <param name="romanValueExpected">Roman value expected.</param>
 
-        [TestCase(-10, "error")]
-        [TestCase(0, "error")]
-        public void ConvertValue_ArabicValueIsNOTProper_ConverterShouldReturnExpectedERROR(int arabicValue, string romanValueExpected)
+        [TestCase(-10)]
+        [TestCase(0)]
+        public void ConvertValue_ArabicValueIsNotProper_ConverterShouldReturnException(int arabicValue)
         {
             //Arrange
             RomanConverter romanNumerals = new RomanConverter();
 
             //Act
-            var actual = romanNumerals.Convert(arabicValue);
+            TestDelegate exceptionDelegate = () => { romanNumerals.Convert(arabicValue); };
 
             //Assert
-            Assert.That(actual, Is.EqualTo(romanValueExpected));
+            Assert.Throws(typeof(RomanConverterNotNaturalNumberException), exceptionDelegate);
         }
 
 
@@ -101,26 +100,25 @@ namespace TddShop.Cli.Tests.Shipment
         }
 
         /// <summary>
-        /// Converts the value roman value is proper converter should return expected arabic value.
+        /// Converts the value roman value is not proper converter should return exception.
         /// Testing bad chars and bad roman numerals (not existing numerals like IXI)
         /// </summary>
         /// <param name="romanValue">Roman value.</param>
-        /// <param name="arabicValueExpected">Arabic value expected.</param>
 
-        [TestCase("IIV", 0)]
-        [TestCase("IXI", 0)]
-        [TestCase("IIL", 0)]
-        [TestCase("hyu", 0)]
-        public void ConvertValue_RomanValueIsNOTProper_ConverterShouldReturnExpectedERROR(string romanValue, int romanErrorValue)
+        [TestCase("IIV")]
+        [TestCase("IXI")]
+        [TestCase("IIL")]
+        [TestCase("hyu")]
+        public void ConvertValue_RomanValueIsNotProper_ConverterShouldReturnException(string romanValue)
         {
             //Arrange
             RomanConverter romanNumerals = new RomanConverter();
 
             //Act
-            var actual = romanNumerals.Convert(romanValue);
+            TestDelegate exceptionDelegate = () => { romanNumerals.Convert(romanValue); };
 
             //Assert
-            Assert.That(actual, Is.EqualTo(romanErrorValue));
+            Assert.Throws(typeof(RomanConverterInvalidInputException), exceptionDelegate);
         }
     }
 }
