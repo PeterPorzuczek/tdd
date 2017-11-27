@@ -45,7 +45,7 @@ namespace TddShop.Cli.Shipment
         bool TestVinculumRoman(string text)
         {
             Regex regex = new Regex(@"^I{0,4}(CI|CD|D?C{0,4})(XC|XL|L?X{0,4})(IX|IV|V?I{0,4})$");
-            return regex.IsMatch(text.Replace("\u0305", ""));
+            return regex.IsMatch(text.Replace(_romanLiterals.vinculumSign, ""));
         }
 
         bool CheckVinculumText(string text, string separator)

@@ -43,7 +43,7 @@ namespace TddShop.Cli.Tests.Shipment
         [TestCase(4000, "MMMM")] //Should be "I̅V̅"
         [TestCase(3000, "I̅I̅I̅")] //Should be "MMM"
         [TestCase(2000, "I̅I̅")] //Should be "MM"
-        public void ConvertValue_ArabicValueIsProperAndExpectedValueIsNOTProper_ConverterShouldReturnNotExpected(int arabicValue, string romanValueExpected)
+        public void ConvertValue_ArabicValueIsProperAndExpectedValueIsNotProper_ConverterShouldReturnNotExpected(int arabicValue, string romanValueExpected)
         {
             //Arrange
             RomanConverter romanNumerals = new RomanConverter();

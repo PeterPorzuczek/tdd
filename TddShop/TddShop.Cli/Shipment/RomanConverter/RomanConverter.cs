@@ -13,7 +13,7 @@ namespace TddShop.Cli.Shipment
 
     public class RomanConverter : IRomanConverter
     {
-        RomanLiterals _romanLiterals;
+        IRomanLiterals _romanLiterals;
 
         public string Convert(int arabicValue)
         {
@@ -28,7 +28,7 @@ namespace TddShop.Cli.Shipment
             // For less than 4000 change thousandSign to M
             convertionResult = arabicValue < 4000 ? convertionResult
                 .Replace($"{_romanLiterals.thousandSign}", "M") :
-                                convertionResult;
+                        convertionResult;
             
             return convertionResult
                 .Replace($"C{_romanLiterals.thousandSign}", "CM");
@@ -39,17 +39,12 @@ namespace TddShop.Cli.Shipment
             _romanLiterals =
                 RomanLiteralsFactory.createDictionaryInVinculumNotation();
 
-            //Case with "I vinculum M" which is "MM"
+            //Case with "I vinculum M" which is "MM" || Standarize before conversion
             romanValue = romanValue.ToUpper().Replace("M", _romanLiterals.thousandSign);
 
             bool validation = new RomanValidator(_romanLiterals).ValidateRoman(romanValue);
 
             var convertionResult = FromRoman(romanValue);
-
-            // For less than 4000 change thousandSign to M
-            romanValue = convertionResult < 4000 ? romanValue
-                .Replace($"{_romanLiterals.thousandSign}", "M") :
-                    romanValue;
             
             return convertionResult;
         }
